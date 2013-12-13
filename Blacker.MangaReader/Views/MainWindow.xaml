@@ -1,0 +1,28 @@
+﻿<metroControls:MetroWindow x:Class="Blacker.MangaReader.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:book="clr-namespace:WPFMitsuControls;assembly=WPFMitsuControls"
+        xmlns:metroControls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        Title="Blacker's Manga Reader" Height="480" Width="640" IgnoreTaskbarOnMaximize="True">
+
+    <i:Interaction.Behaviors>
+        <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" EnableDWMDropShadow="True" AllowsTransparency="False" />
+    </i:Interaction.Behaviors>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <book:Book Margin="0,0,0,0" Name="BookControl" ItemsSource="{Binding Path=Pages}" Grid.Row="1" Width="{Binding ElementName=LayoutRoot, Path=ActualWidth}" Height="{Binding ElementName=LayoutRoot, Path=ActualHeight}">
+            <book:Book.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel Background="Aqua">
+                        <TextBlock Text="{Binding .}" />
+                    </WrapPanel>
+                </DataTemplate>
+            </book:Book.ItemTemplate>
+        </book:Book>
+    </Grid>
+</metroControls:MetroWindow>
