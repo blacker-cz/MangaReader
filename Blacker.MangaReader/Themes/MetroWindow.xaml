@@ -1,0 +1,183 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:MahApps.Metro.Converters;assembly=MahApps.Metro"
+                    xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.TextBlock.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <converters:ToUpperConverter x:Key="ToUpperConverter" />
+
+    <ControlTemplate x:Key="BlackerWindowTemplateKey"
+                     TargetType="{x:Type Controls:MetroWindow}">
+        <Grid>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="LayoutStates">
+                    <VisualState x:Name="AfterLoaded">
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
+                                                           Storyboard.TargetProperty="(UIElement.Opacity)"
+                                                           Storyboard.TargetName="PART_Border">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00"
+                                                      Value="0" />
+                                <EasingDoubleKeyFrame KeyTime="00:00:00.600"
+                                                      Value="1">
+                                    <EasingDoubleKeyFrame.EasingFunction>
+                                        <CubicEase EasingMode="EaseIn" />
+                                    </EasingDoubleKeyFrame.EasingFunction>
+                                </EasingDoubleKeyFrame>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualState>
+                    <VisualState x:Name="BeforeLoaded" />
+                    <VisualState x:Name="BeforeUnloaded" />
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <AdornerDecorator>
+                <Controls:MetroContentControl IsTabStop="False"
+                                              FocusVisualStyle="{x:Null}"
+                                              TransitionsEnabled="{TemplateBinding WindowTransitionsEnabled}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Rectangle x:Name="PART_WindowTitleBackground"
+                                   Fill="{DynamicResource HighlightBrush}"
+                                   Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
+                                   Visibility="{TemplateBinding ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Panel.ZIndex="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="3"
+                                   StrokeThickness="0" />
+
+                        <!-- the title bar -->
+                        <Grid x:Name="PART_TitleBar"
+                              Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
+                              Visibility="{TemplateBinding ShowTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+                              Grid.Column="0"
+                              Panel.ZIndex="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Visibility="{TemplateBinding ShowIconOnTitleBar, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Source="{TemplateBinding Icon}"
+                                   RenderOptions.EdgeMode="Aliased"
+                                   RenderOptions.BitmapScalingMode="HighQuality" />
+                            <TextBlock x:Name="WindowTitleTextBlock"
+                                       Grid.Column="1"
+                                       Text="{TemplateBinding Title}"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Margin="8 -1 0 0"
+                                       FontSize="{DynamicResource WindowTitleFontSize}"
+                                       FontFamily="{DynamicResource HeaderFontFamily}">
+                                <TextBlock.Foreground>
+                                    <MultiBinding Converter="{x:Static converters:BackgroundToForegroundConverter.Instance}">
+                                        <Binding ElementName="PART_WindowTitleBackground"
+                                                 Path="Fill"
+                                                 Mode="OneWay" />
+                                        <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                                                 Path="TitleForeground"
+                                                 Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.Foreground>
+                            </TextBlock>
+                        </Grid>
+
+                        <!-- the window commands -->
+                        <ContentPresenter x:Name="PART_WindowCommands"
+                                          Content="{Binding WindowCommands, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
+                                          Panel.ZIndex="2"
+                                          Grid.Column="1"
+                                          Grid.RowSpan="2"
+                                          VerticalAlignment="Top"
+                                          Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" />
+                        <!-- the window button commands -->
+                        <Controls:WindowButtonCommands x:Name="PART_WindowButtonCommands"
+                                                       Panel.ZIndex="2"
+                                                       Grid.Column="2"
+                                                       Grid.RowSpan="2"
+                                                       VerticalAlignment="Top"
+                                                       Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}" />
+
+                        <!-- the main window content -->
+                        <ContentPresenter Grid.Row="1"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="3" />
+
+                        <!-- flyouts -->
+                        <ContentControl Grid.Row="0"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="3"
+                                        Grid.RowSpan="2"
+                                        Panel.ZIndex="3"
+                                        Focusable="False"
+                                        KeyboardNavigation.TabNavigation="None"
+                                        Content="{Binding Flyouts, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
+                                        VerticalAlignment="Stretch" />
+                        
+                        <!--Used to create that overlay effect. Can be used for anything.-->
+                        <Grid Grid.Row="0"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="3"
+                              Grid.RowSpan="2"
+                              Panel.ZIndex="4"
+                              FocusVisualStyle="{x:Null}"
+                              x:Name="PART_OverlayBox"
+                              Background="{DynamicResource BlackColorBrush}"
+                              Opacity=".7"
+                              Visibility="Hidden" />
+                        
+                        <Grid Grid.Row="0"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="3"
+                              Grid.RowSpan="2"
+                              Panel.ZIndex="5"
+                              FocusVisualStyle="{x:Null}"
+                              x:Name="PART_MessageDialogContainer" />
+                    </Grid>
+                </Controls:MetroContentControl>
+            </AdornerDecorator>
+            <Border x:Name="PART_Border"
+                    Opacity="0"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch" />
+            <ResizeGrip x:Name="WindowResizeGrip"
+                        HorizontalAlignment="Right"
+                        IsTabStop="false"
+                        Visibility="Collapsed"
+                        VerticalAlignment="Bottom" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="ResizeMode"
+                               Value="CanResizeWithGrip" />
+                    <Condition Property="WindowState"
+                               Value="Normal" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Visibility"
+                        TargetName="WindowResizeGrip"
+                        Value="Visible" />
+            </MultiTrigger>
+            <Trigger Property="TitleCaps"
+                     Value="True">
+                <Setter TargetName="WindowTitleTextBlock"
+                        Property="Text"
+                        Value="{Binding Path=Title, Converter={StaticResource ToUpperConverter}, RelativeSource={RelativeSource TemplatedParent}}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+</ResourceDictionary>
