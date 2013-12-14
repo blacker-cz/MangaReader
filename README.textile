@@ -12,6 +12,7 @@ Blacker's Manga Reader is using following 3rd-party libraries:
 * WPF and Silverlight BookControls - "http://wpfbookcontrol.codeplex.com/(http://wpfbookcontrol.codeplex.com/)":http://wpfbookcontrol.codeplex.com/
 * log4net - "http://logging.apache.org/log4net/(http://logging.apache.org/log4net/)":http://logging.apache.org/log4net/
 * MahApps.Metro - "https://github.com/MahApps/MahApps.Metro(https://github.com/MahApps/MahApps.Metro)":https://github.com/MahApps/MahApps.Metro
+* SharpCompress - "http://sharpcompress.codeplex.com/(http://sharpcompress.codeplex.com/)":http://sharpcompress.codeplex.com/
 
 most of these libraries are automatically loaded to the solution using "NuGet(http://nuget.codeplex.com/)":http://nuget.codeplex.com/
 
