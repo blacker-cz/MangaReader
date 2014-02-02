@@ -9,71 +9,158 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:eity="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:eins="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:converters="clr-namespace:Blacker.MangaReader.Converters"
         mc:Ignorable="d"
+        Title="Manga Reader"
         Template="{DynamicResource ResourceKey=BlackerWindowTemplateKey}"
-        Title="Blacker's Manga Reader" Height="480" Width="640" IgnoreTaskbarOnMaximize="True">
+        IgnoreTaskbarOnMaximize="True"
+        Closing="OnWindowClosing">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:ComicBookPageTypeToAlignmentConverter x:Key="ComicBookPageTypeToAlignmentConverter" />
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Window.InputBindings>
+        <KeyBinding Key="Space" Command="{Binding Path=NextPageCommand}" />
+        <KeyBinding Key="Right" Command="{Binding Path=NextPageCommand}" />
+        <KeyBinding Key="PageDown" Command="{Binding Path=NextPageCommand}" />
+
+        <KeyBinding Key="Left" Command="{Binding Path=PrevPageCommand}" />
+        <KeyBinding Key="PageUp" Command="{Binding Path=PrevPageCommand}" />
+        
+        <KeyBinding Key="Right" Modifiers="Shift" Command="{Binding Path=NextChapterCommand}" />
+        <KeyBinding Key="PageDown" Modifiers="Shift" Command="{Binding Path=NextChapterCommand}" />
+        
+        <KeyBinding Key="Left" Modifiers="Shift" Command="{Binding Path=PrevChapterCommand}" />
+        <KeyBinding Key="PageUp" Modifiers="Shift" Command="{Binding Path=PrevChapterCommand}" />
+        
+        <KeyBinding Key="O" Modifiers="Control" Command="{Binding Path=OpenChapterCommand}" />
+    </Window.InputBindings>
     
     <i:Interaction.Behaviors>
         <behaviours:BorderlessWindowBehavior ResizeWithGrip="True" EnableDWMDropShadow="True" AllowsTransparency="False" />
     </i:Interaction.Behaviors>
 
-    <Grid>
+    <eity:Interaction.Triggers>
+        <eity:EventTrigger EventName="MouseLeave">
+            <eins:GoToStateAction TargetName="MainGrid" StateName="HideNavigationPanelState"/>
+        </eity:EventTrigger>
+    </eity:Interaction.Triggers>
+
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="HideShowNav">
+            <VisualStateGroup x:Name="HideShowNavigationPanel">
                 <VisualStateGroup.Transitions>
                     <VisualTransition GeneratedDuration="0:0:0.3"/>
                 </VisualStateGroup.Transitions>
-                <VisualState x:Name="ShowNav">
+                <VisualState x:Name="ShowNavigationPanelState">
                     <Storyboard>
-                        <DoubleAnimation Duration="0" To="60" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" Storyboard.TargetName="NavPanel" d:IsOptimized="True"/>
+                        <DoubleAnimation Duration="0" To="60" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)" Storyboard.TargetName="NavigationPanel" d:IsOptimized="True"/>
                     </Storyboard>
                 </VisualState>
-                <VisualState x:Name="HideNav"/>
+                <VisualState x:Name="HideNavigationPanelState"/>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <Rectangle x:Name="ShowObject" Fill="#00FFFFFF" Grid.Row="0" Panel.ZIndex="-2" Height="10" Margin="0,0,0,0" VerticalAlignment="Top">
+        <Rectangle x:Name="ShowNavigationPanel" Fill="#00FFFFFF" Grid.Row="0" Panel.ZIndex="-2" Height="15" Margin="50,0,50,0" VerticalAlignment="Top">
             <eity:Interaction.Triggers>
                 <eity:EventTrigger EventName="MouseEnter">
-                    <eins:GoToStateAction StateName="ShowNav"/>
+                    <eins:GoToStateAction StateName="ShowNavigationPanelState"/>
                 </eity:EventTrigger>
             </eity:Interaction.Triggers>
         </Rectangle>
-        
-        <StackPanel x:Name="NavPanel" Height="60" Margin="0,-60,0,0" Grid.Row="0" VerticalAlignment="Top" Panel.ZIndex="-1" Orientation="Horizontal" Background="Black" Opacity="0.5" RenderTransformOrigin="0.5,0.5">
-            <StackPanel.RenderTransform>
-                <TranslateTransform/>
-            </StackPanel.RenderTransform>
+
+        <StackPanel Grid.Row="0" Panel.ZIndex="-3" Height="18" Margin="0,0,0,0" VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=CurrentComicBookName}" />
         </StackPanel>
-        
-        <book:Book Margin="0,10,0,0" Name="BookControl" 
-                    ItemsSource="{Binding Path=Pages}" 
-                    Grid.Row="0"
-                    Panel.ZIndex="-3"
-                    Width="{Binding ElementName=LayoutRoot, Path=ActualWidth}" 
-                    Height="{Binding ElementName=LayoutRoot, Path=ActualHeight}">
-            <book:Book.ItemTemplate>
-                <DataTemplate>
-                    <WrapPanel Background="Aqua">
-                        <TextBlock Text="{Binding .}" />
-                    </WrapPanel>
-                </DataTemplate>
-            </book:Book.ItemTemplate>
+
+        <DockPanel x:Name="NavigationPanel" Height="60" Margin="0,-60,0,0" Grid.Row="0" VerticalAlignment="Top" Panel.ZIndex="-1" Background="{DynamicResource AccentColorBrush3}" RenderTransformOrigin="0.5,0.5">
+            <DockPanel.RenderTransform>
+                <TranslateTransform/>
+            </DockPanel.RenderTransform>
+            <Grid Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="0, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=OpenChapterCommand}"
+                        ToolTip="Open Chapter">
+                    <Rectangle Fill="Black" Width="15" Height="15">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource AppbarFolderOpen}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=PrevChapterCommand}"
+                        ToolTip="Previous Chapter">
+                    <Rectangle Fill="Black" Width="15" Height="15">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource AppbarNavigatePreviousStop}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-50, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=PrevPageCommand}"
+                        ToolTip="Previous Page">
+                    <Rectangle Fill="Black" Width="15" Height="15">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource AppbarNavigatePrevious}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="50, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=NextPageCommand}"
+                        ToolTip="Next Page">
+                    <Rectangle Fill="Black" Width="15" Height="15">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource AppbarNavigateNext}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=NextChapterCommand}"
+                        ToolTip="Next Chapter">
+                    <Rectangle Fill="Black" Width="15" Height="15">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource AppbarNavigateNextStop}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button>
+            </Grid>
+        </DockPanel>
+
+        <Border Grid.Row="0" Margin="0,18,0,0" Panel.ZIndex="-3" Background="{DynamicResource WindowBackgroundColorBrush}">
+            <Viewbox Margin="4,0,4,4">
+                <book:Book Name="BookControl" ItemsSource="{Binding Path=Pages}" CurrentSheetIndex="{Binding Path=CurrentSheetIndex, Mode=TwoWay}">
+                    <book:Book.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="White" Cursor="Hand">
+                                <Border BorderThickness="0.1,0,0.1,0" BorderBrush="Black" />
+                                <WrapPanel HorizontalAlignment="{Binding Path=PageType, Converter={StaticResource ComicBookPageTypeToAlignmentConverter}}" VerticalAlignment="Center">
+                                    <Image Source="{Binding Path=Image}" />
+                                </WrapPanel>
+                                <Grid.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" 
+                                                      Command="{Binding Path=DataContext.PageClickedCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                                      CommandParameter="{Binding Path=.}"/>
+                                </Grid.InputBindings>
+                            </Grid>
+                        </DataTemplate>
+                    </book:Book.ItemTemplate>
+                    <eity:Interaction.Triggers>
+                        <eity:EventTrigger EventName="MouseEnter">
+                            <eins:GoToStateAction StateName="HideNavigationPanelState"/>
+                        </eity:EventTrigger>
+                    </eity:Interaction.Triggers>
+                </book:Book>
+            </Viewbox>
             <eity:Interaction.Triggers>
                 <eity:EventTrigger EventName="MouseEnter">
-                    <eins:GoToStateAction StateName="HideNav"/>
+                    <eins:GoToStateAction StateName="HideNavigationPanelState"/>
                 </eity:EventTrigger>
             </eity:Interaction.Triggers>
-        </book:Book>
-        <Rectangle x:Name="HideObject" Fill="#00FFFFFF" Grid.Row="0" Panel.ZIndex="-10" Height="103" Margin="0,55,0,0" VerticalAlignment="Top">
-            <eity:Interaction.Triggers>
-                <eity:EventTrigger EventName="MouseEnter">
-                    <eins:GoToStateAction StateName="HideNav"/>
-                </eity:EventTrigger>
-            </eity:Interaction.Triggers>
-        </Rectangle>
+        </Border>
     </Grid>
 </metroControls:MetroWindow>
