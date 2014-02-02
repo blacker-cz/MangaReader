@@ -25,8 +25,6 @@ namespace Blacker.MangaReader.Views
             KeyDown += OnKeyDown;
             StateChanged += OnStateChanged;
 
-            ShowTitleBar = WindowState != WindowState.Maximized;
-
             Height = Properties.Settings.Default.WindowHeight;
             Width = Properties.Settings.Default.WindowWidth;
 
@@ -35,6 +33,8 @@ namespace Blacker.MangaReader.Views
             {
                 WindowState = windowState;
             }
+
+            ShowTitleBar = WindowState != WindowState.Maximized;
         }
 
         void OnTurnPageRequested(object sender, Utils.EventArgs<TurnPageRequestType> e)
