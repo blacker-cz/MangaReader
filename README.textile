@@ -1,9 +1,8 @@
-﻿
 h1. Blacker's Manga Reader
 
 h2. Description
 
-...
+Very simple application for reading manga/comic book archives.
 
 h2. 3rd party software, libraries, etc.
 
