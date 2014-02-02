@@ -23,6 +23,7 @@ namespace WPFMitsuControls
         {
             DisplayModeProperty = DependencyProperty.Register("DisplayMode", typeof(BookDisplayMode), typeof(Book), new PropertyMetadata(BookDisplayMode.Normal, new PropertyChangedCallback(OnDisplayModeChanged)));
             CurrentPageProperty = DependencyProperty.Register("CurrentPage", typeof(BookCurrentPage), typeof(Book), new PropertyMetadata(BookCurrentPage.RightSheet, new PropertyChangedCallback(OnCurrentPageChanged)));
+            CurrentSheetIndexProperty = DependencyProperty.Register("CurrentSheetIndex", typeof(int), typeof(Book), new PropertyMetadata(0, new PropertyChangedCallback(OnCurrentSheetIndexChanged)));
         }
 
         private static void OnDisplayModeChanged(DependencyObject source, DependencyPropertyChangedEventArgs args)
@@ -56,8 +57,20 @@ namespace WPFMitsuControls
                 b.AnimateToLeftSheet();
         }
 
+        private static void OnCurrentSheetIndexChanged(DependencyObject source, DependencyPropertyChangedEventArgs args)
+        {
+            var newSheetIndex = (int) args.NewValue;
+            var book = (Book) source;
+
+            if ((newSheetIndex >= 0) && (newSheetIndex <= book.GetItemsCount() / 2))
+            {
+                book.CurrentSheetIndex = newSheetIndex;
+            }
+        }
+
         public static DependencyProperty DisplayModeProperty;
         public static DependencyProperty CurrentPageProperty;
+        public static DependencyProperty CurrentSheetIndexProperty;
 
         private PageStatus _status = PageStatus.None;
         private DataTemplate defaultDataTemplate;
@@ -112,8 +125,6 @@ namespace WPFMitsuControls
             return c;
         }
 
-        private int _currentSheetIndex = 0;
-
         public void AnimateToNextPage(bool fromTop, int duration)
         {
             if (CurrentSheetIndex + 1 <= GetItemsCount() / 2)
@@ -148,20 +159,23 @@ namespace WPFMitsuControls
 
         public int CurrentSheetIndex
         {
-            get { return _currentSheetIndex; }
-            set 
+            get { return (int) GetValue(CurrentSheetIndexProperty); }
+            set
             {
                 if (_status != PageStatus.None) return;
 
-                if (_currentSheetIndex != value)
+                if ((int) GetValue(CurrentSheetIndexProperty) != value)
                 {
-                    if ((value >= 0) && (value <= GetItemsCount() / 2))
-                    {
-                        _currentSheetIndex = value;
-                        RefreshSheetsContent();
-                    }
-                    else
-                        throw new Exception("Index out of bounds");
+                    SetValue(CurrentSheetIndexProperty, value);
+                }
+
+                if ((value >= 0) && (value <= GetItemsCount()/2))
+                {
+                    RefreshSheetsContent();
+                }
+                else
+                {
+                    throw new IndexOutOfRangeException("Index out of bounds");
                 }
             }
         }
@@ -224,13 +238,13 @@ namespace WPFMitsuControls
             sheet1Page0Content.ContentTemplate = dt;
             sheet1Page1Content.ContentTemplate = dt;
             sheet1Page2Content.ContentTemplate = dt;
-                
-            sheet0Page2ContentVisibility = _currentSheetIndex == 1 ? Visibility.Hidden : Visibility.Visible;
+
+            sheet0Page2ContentVisibility = CurrentSheetIndex == 1 ? Visibility.Hidden : Visibility.Visible;
             int count = GetItemsCount();
             int sheetCount = count / 2;
             bool isOdd = (count % 2) == 1;
 
-            if (_currentSheetIndex == sheetCount)
+            if (CurrentSheetIndex == sheetCount)
             {
                 if (isOdd)
                 {
@@ -240,14 +254,14 @@ namespace WPFMitsuControls
                 else
                     bp1Visibility = Visibility.Hidden;
             }
-            
-            if (_currentSheetIndex == sheetCount - 1) 
+
+            if (CurrentSheetIndex == sheetCount - 1) 
             {
                 if (!isOdd)
                     sheet1Page2ContentVisibility = Visibility.Hidden;
             }
 
-            if (_currentSheetIndex == 0)
+            if (CurrentSheetIndex == 0)
             {
                 sheet0Page0Content.Content = null;
                 sheet0Page1Content.Content = null;
