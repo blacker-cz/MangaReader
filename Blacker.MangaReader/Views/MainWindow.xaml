@@ -13,8 +13,7 @@
         mc:Ignorable="d"
         Title="Manga Reader"
         Template="{DynamicResource ResourceKey=BlackerWindowTemplateKey}"
-        IgnoreTaskbarOnMaximize="True"
-        Closing="OnWindowClosing">
+        IgnoreTaskbarOnMaximize="True">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -23,7 +22,6 @@
     </Window.Resources>
     
     <Window.InputBindings>
-        <KeyBinding Key="Space" Command="{Binding Path=NextPageCommand}" />
         <KeyBinding Key="Right" Command="{Binding Path=NextPageCommand}" />
         <KeyBinding Key="PageDown" Command="{Binding Path=NextPageCommand}" />
 

@@ -23,7 +23,9 @@ namespace Blacker.MangaReader.Views
             DataContext = viewModel;
 
             KeyDown += OnKeyDown;
+            PreviewKeyDown += OnPreviewKeyDown;
             StateChanged += OnStateChanged;
+            Closing += OnWindowClosing;
 
             Height = Properties.Settings.Default.WindowHeight;
             Width = Properties.Settings.Default.WindowWidth;
@@ -69,6 +71,21 @@ namespace Blacker.MangaReader.Views
             }
         }
 
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // this is a bit "hacky" but it solves the issue with focus on some active button when the SPACE key is pressed
+            if (e.Key == Key.Space)
+            {
+                var vm = DataContext as MainWindowViewModel;
+
+                if (vm != null && vm.NextPageCommand.CanExecute(null))
+                {
+                    vm.NextPageCommand.Execute(null);
+                    e.Handled = true;
+                }
+            }
+        }
+
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
             if (WindowState == WindowState.Maximized)
@@ -85,5 +102,5 @@ namespace Blacker.MangaReader.Views
 
             Properties.Settings.Default.WindowState = WindowState.ToString();
         }
-    }
+   }
 }
