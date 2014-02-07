@@ -73,10 +73,6 @@
             </eity:Interaction.Triggers>
         </Rectangle>
 
-        <StackPanel Grid.Row="0" Panel.ZIndex="-3" Height="18" Margin="0,0,0,0" VerticalAlignment="Top">
-            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=CurrentComicBookName}" />
-        </StackPanel>
-
         <DockPanel x:Name="NavigationPanel" Height="60" Margin="0,-60,0,0" Grid.Row="0" VerticalAlignment="Top" Panel.ZIndex="-1" Background="{DynamicResource AccentColorBrush3}" RenderTransformOrigin="0.5,0.5">
             <DockPanel.RenderTransform>
                 <TranslateTransform/>
@@ -126,18 +122,31 @@
                         </Rectangle.OpacityMask>
                     </Rectangle>
                 </Button>
+                <Slider x:Name="ZoomSlider" Grid.Column="1" Width="50" Height="40" Margin="300,21,0,0" Minimum="1.0" Maximum="3.0" TickFrequency="0.1" />
             </Grid>
         </DockPanel>
 
-        <Border Grid.Row="0" Margin="0,18,0,0" Panel.ZIndex="-3" Background="{DynamicResource WindowBackgroundColorBrush}">
-            <Viewbox Margin="4,0,4,4">
+        <Border Name="BookBorder"  Grid.Row="0" Margin="0,18,0,0" Panel.ZIndex="-3" Background="{DynamicResource WindowBackgroundColorBrush}">
+            <Viewbox Margin="4,0,4,4" Name="BookViewbox">
+                <Viewbox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform>
+                            <ScaleTransform.ScaleX>
+                                <Binding ElementName="ZoomSlider" Path="Value" Mode="TwoWay"/>
+                            </ScaleTransform.ScaleX>
+                            <ScaleTransform.ScaleY>
+                                <Binding ElementName="ZoomSlider" Path="Value" Mode="TwoWay"/>
+                            </ScaleTransform.ScaleY>
+                        </ScaleTransform>
+                    </TransformGroup>
+                </Viewbox.RenderTransform>
                 <book:Book Name="BookControl" ItemsSource="{Binding Path=Pages}" CurrentSheetIndex="{Binding Path=CurrentSheetIndex, Mode=TwoWay}">
                     <book:Book.ItemTemplate>
                         <DataTemplate>
                             <Grid Background="White" Cursor="Hand">
                                 <Border BorderThickness="0.1,0,0.1,0" BorderBrush="Black" />
                                 <WrapPanel HorizontalAlignment="{Binding Path=PageType, Converter={StaticResource ComicBookPageTypeToAlignmentConverter}}" VerticalAlignment="Center">
-                                    <Image Source="{Binding Path=Image}" />
+                                    <Image Source="{Binding Path=Image}" Panel.ZIndex="-5" />
                                 </WrapPanel>
                                 <Grid.InputBindings>
                                     <MouseBinding MouseAction="LeftClick" 
@@ -160,5 +169,9 @@
                 </eity:EventTrigger>
             </eity:Interaction.Triggers>
         </Border>
+
+        <StackPanel Grid.Row="0" Panel.ZIndex="-3" Height="18" Margin="0,0,0,0" VerticalAlignment="Top" Background="White">
+            <TextBlock HorizontalAlignment="Center" Text="{Binding Path=CurrentComicBookName}" />
+        </StackPanel>
     </Grid>
 </metroControls:MetroWindow>

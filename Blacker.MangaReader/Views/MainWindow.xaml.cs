@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Blacker.MangaReader.Services;
 using Blacker.MangaReader.ViewModels;
 using MahApps.Metro.Controls;
@@ -37,9 +39,12 @@ namespace Blacker.MangaReader.Views
             }
 
             ShowTitleBar = WindowState != WindowState.Maximized;
+
+            BookViewbox.MouseWheel += BookViewboxOnMouseWheel;
+            BookViewbox.MouseMove += BookViewboxOnMouseMove;
         }
 
-        void OnTurnPageRequested(object sender, Utils.EventArgs<TurnPageRequestType> e)
+        private void OnTurnPageRequested(object sender, Utils.EventArgs<TurnPageRequestType> e)
         {
             switch (e.Value)
             {
@@ -102,5 +107,62 @@ namespace Blacker.MangaReader.Views
 
             Properties.Settings.Default.WindowState = WindowState.ToString();
         }
-   }
+
+        private void BookViewboxOnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var st = TryGetTransform<ScaleTransform>(BookViewbox);
+
+            double zoom = e.Delta > 0 ? 0.1 : -0.1;
+
+            if ((!(e.Delta > 0) && (st.ScaleX <= 1 || st.ScaleY <= 1)) || (e.Delta > 0 && (st.ScaleX > 3 || st.ScaleY > 3)))
+                return;
+
+            Point relative = e.GetPosition(BookViewbox);
+
+            st.ScaleX += zoom;
+            st.ScaleY += zoom;
+
+            if (Math.Abs(st.ScaleX - 1) < 0.001 || Math.Abs(st.ScaleY - 1) < 0.001)
+            {
+                st.ScaleX = 1;
+                st.ScaleY = 1;
+
+                ResetZoomOrigin(st);
+            }
+            else
+            {
+                st.CenterX = relative.X;
+                st.CenterY = relative.Y;
+            }
+        }
+
+        private void BookViewboxOnMouseMove(object sender, MouseEventArgs e)
+        {
+            var st = TryGetTransform<ScaleTransform>(BookViewbox);
+
+            if (Math.Abs(st.ScaleX - 1) > 0.001 && Math.Abs(st.ScaleY - 1) > 0.001)
+            {
+                var position = e.GetPosition(BookViewbox);
+
+                st.CenterX = position.X;
+                st.CenterY = position.Y;
+            }
+            else
+            {
+                ResetZoomOrigin(st);
+            }
+        }
+
+        private void ResetZoomOrigin(ScaleTransform scaleTransform)
+        {
+            // this will set the scale transform center to center of book
+            scaleTransform.CenterX = BookViewbox.ActualWidth / 2;
+            scaleTransform.CenterY = BookViewbox.ActualHeight / 2;
+        }
+
+        private T TryGetTransform<T>(UIElement element) where T : Transform
+        {
+            return ((TransformGroup) element.RenderTransform).Children.FirstOrDefault(tr => tr is T) as T;
+        }
+    }
 }
