@@ -34,7 +34,7 @@ namespace Blacker.MangaReader.ComicBook.Helpers
         {
             get
             {
-                return String.Format("Comic books|{0}*.exe;*.cmd;*.bat", SupportedExtensions.Select(e => String.Concat("*.", e)).Aggregate((a, b) => String.Concat(a, ";", b)));
+                return String.Format("Comic books|{0}", SupportedExtensions.Select(e => String.Concat("*.", e)).Aggregate((a, b) => String.Concat(a, ";", b)));
             }
         }
 
