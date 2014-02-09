@@ -37,6 +37,7 @@ namespace Blacker.MangaReader.ComicBook
         {
             switch (PageType)
             {
+                case ComicBookPageType.Filler:
                 case ComicBookPageType.WholePage:
                     return _originalImage;
 
@@ -50,6 +51,11 @@ namespace Blacker.MangaReader.ComicBook
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public static ComicBookPage CreateFiller()
+        {
+            return new ComicBookPage(String.Empty, new BitmapImage(), ComicBookPageType.Filler);
         }
     }
 }

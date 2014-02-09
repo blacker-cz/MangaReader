@@ -4,6 +4,7 @@
     {
         WholePage,
         LeftHalf,
-        RightHalf
+        RightHalf,
+        Filler
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Blacker.MangaReader.ComicBook;
@@ -65,6 +67,9 @@ namespace Blacker.MangaReader.ViewModels
 
                 _currentSheetIndex = value;
                 OnPropertyChanged(() => CurrentSheetIndex);
+
+                OnPropertyChanged(() => LeftPageLabel);
+                OnPropertyChanged(() => RightPageLabel);
             }
         }
 
@@ -91,6 +96,17 @@ namespace Blacker.MangaReader.ViewModels
                     return;
 
                 _currentComicBook = value;
+
+                if (_currentComicBook != null && _currentComicBook.Pages is ObservableCollection<ComicBookPage>)
+                {
+                    var collection = _currentComicBook.Pages as ObservableCollection<ComicBookPage>;
+                    collection.CollectionChanged += (sender, args) =>
+                                                        {
+                                                            OnPropertyChanged(() => LeftPageLabel);
+                                                            OnPropertyChanged(() => RightPageLabel);
+                                                        };
+                }
+
                 OnPropertyChanged(() => Pages);
                 OnPropertyChanged(() => CurrentComicBookName);
             }
@@ -99,6 +115,49 @@ namespace Blacker.MangaReader.ViewModels
         public string CurrentComicBookName
         {
             get { return _currentComicBook == null ? String.Empty : _currentComicBook.Name; }
+        }
+
+        public string LeftPageLabel
+        {
+            get
+            {
+                if (CurrentSheetIndex == 0)
+                    return String.Empty;
+
+                var page = Pages.Skip(CurrentSheetIndex*2 - 1).FirstOrDefault();
+
+                if (page == null || page.PageType == ComicBookPageType.Filler)
+                    return String.Empty;
+
+                return String.Format("{0}/{1}", page.Name ?? (CurrentSheetIndex*2).ToString(CultureInfo.InvariantCulture), PageCount);
+            }
+        }
+
+        public string RightPageLabel
+        {
+            get
+            {
+                if (CurrentSheetIndex*2 > Pages.Count())
+                    return String.Empty;
+
+                var page = Pages.Skip(CurrentSheetIndex*2).FirstOrDefault();
+
+                if (page == null || page.PageType == ComicBookPageType.Filler)
+                    return String.Empty;
+
+                return String.Format("{0}/{1}", page.Name ?? (CurrentSheetIndex*2 + 1).ToString(CultureInfo.InvariantCulture), PageCount);
+            }
+        }
+
+        private int PageCount
+        {
+            get
+            {
+                if (Pages == null)
+                    return 0;
+
+                return Pages.Count(cbp => cbp.PageType != ComicBookPageType.Filler && cbp.PageType != ComicBookPageType.RightHalf);
+            }
         }
 
         private void PageClicked(object param)

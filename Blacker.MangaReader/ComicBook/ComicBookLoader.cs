@@ -70,7 +70,7 @@ namespace Blacker.MangaReader.ComicBook
                                 CopyStream(memoryStream, entryStream);
                                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                                var progressParams = new ProgressParams(entry.FilePath, memoryStream);
+                                var progressParams = new ProgressParams(Path.GetFileNameWithoutExtension(entry.FilePath), memoryStream);
 
                                 backgroundWorker.ReportProgress(++counter, progressParams);
                             }
@@ -106,7 +106,7 @@ namespace Blacker.MangaReader.ComicBook
                     if (image.PixelWidth >= image.PixelHeight)
                     {
                         if (_pages.Count%2 != 1)
-                            _pages.Add(new ComicBookPage(String.Empty, new BitmapImage(), ComicBookPageType.WholePage));
+                            _pages.Add(ComicBookPage.CreateFiller());
 
                         _pages.Add(new ComicBookPage(progressParams.Name, image, ComicBookPageType.LeftHalf));
                         _pages.Add(new ComicBookPage(progressParams.Name, image, ComicBookPageType.RightHalf));

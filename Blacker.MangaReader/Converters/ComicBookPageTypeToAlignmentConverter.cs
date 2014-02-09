@@ -15,6 +15,7 @@ namespace Blacker.MangaReader.Converters
             switch (pageType)
             {
                 case ComicBookPageType.WholePage:
+                case ComicBookPageType.Filler:
                     return HorizontalAlignment.Center;
 
                 case ComicBookPageType.LeftHalf:

@@ -170,8 +170,10 @@
             </eity:Interaction.Triggers>
         </Border>
 
-        <StackPanel Grid.Row="0" Panel.ZIndex="-3" Height="18" Margin="0,0,0,0" VerticalAlignment="Top" Background="White">
+        <DockPanel Grid.Row="0" Panel.ZIndex="-3" Height="18" Margin="0,0,0,0" VerticalAlignment="Top" Background="White">
+            <TextBlock DockPanel.Dock="Left" Text="{Binding Path=LeftPageLabel}" Margin="125,0,0,0" />
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{Binding Path=RightPageLabel}" Margin="0,0,125,0" />
             <TextBlock HorizontalAlignment="Center" Text="{Binding Path=CurrentComicBookName}" />
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </metroControls:MetroWindow>
