@@ -11,8 +11,10 @@
         xmlns:eins="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:converters="clr-namespace:Blacker.MangaReader.Converters"
         mc:Ignorable="d"
+        Icon="..\reader.ico"
         Title="Manga Reader"
         Template="{DynamicResource ResourceKey=BlackerWindowTemplateKey}"
+        ShowIconOnTitleBar="True"
         IgnoreTaskbarOnMaximize="True">
 
     <Window.Resources>
