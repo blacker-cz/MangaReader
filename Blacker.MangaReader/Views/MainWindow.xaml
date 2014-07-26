@@ -86,43 +86,23 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="0, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=OpenChapterCommand}"
                         ToolTip="Open Chapter">
-                    <Rectangle Fill="Black" Width="15" Height="15">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource AppbarFolderOpen}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <TextBlock Text="&#xf115;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="17" Margin="1, 2, 0, 0" />
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=PrevChapterCommand}"
                         ToolTip="Previous Chapter">
-                    <Rectangle Fill="Black" Width="15" Height="15">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource AppbarNavigatePreviousStop}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <TextBlock Text="&#xf100;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="-3, 2, 0, 0" />
                 </Button>
-                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-50, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=PrevPageCommand}"
+                <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-50, 0, 0, 0" Command="{Binding Path=PrevPageCommand}"
                         ToolTip="Previous Page">
-                    <Rectangle Fill="Black" Width="15" Height="15">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource AppbarNavigatePrevious}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <TextBlock Text="&#xf104;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="-3, 2, 0, 0" />
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="50, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=NextPageCommand}"
                         ToolTip="Next Page">
-                    <Rectangle Fill="Black" Width="15" Height="15">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource AppbarNavigateNext}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <TextBlock Text="&#xf105;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="1, 2, 0, 0" />
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=NextChapterCommand}"
                         ToolTip="Next Chapter">
-                    <Rectangle Fill="Black" Width="15" Height="15">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource AppbarNavigateNextStop}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
+                    <TextBlock Text="&#xf101;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="1, 2, 0, 0" />
                 </Button>
                 <Slider x:Name="ZoomSlider" Grid.Column="1" Width="50" Height="40" Margin="300,21,0,0" Minimum="1.0" Maximum="3.0" TickFrequency="0.1" />
             </Grid>
