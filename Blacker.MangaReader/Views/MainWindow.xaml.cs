@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interactivity;
 using System.Windows.Media;
 using Blacker.MangaReader.Services;
 using Blacker.MangaReader.ViewModels;
@@ -163,6 +166,14 @@ namespace Blacker.MangaReader.Views
         private T TryGetTransform<T>(UIElement element) where T : Transform
         {
             return ((TransformGroup) element.RenderTransform).Children.FirstOrDefault(tr => tr is T) as T;
+        }
+
+        private void TriggerBase_OnPreviewInvoke(object sender, PreviewInvokeEventArgs e)
+        {
+            if (NextChapterContextMenu.IsOpen || PreviousChapterContextMenu.IsOpen)
+            {
+                e.Cancelling = true;
+            }
         }
     }
 }

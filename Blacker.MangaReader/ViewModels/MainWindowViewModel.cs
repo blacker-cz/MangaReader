@@ -109,6 +109,8 @@ namespace Blacker.MangaReader.ViewModels
 
                 OnPropertyChanged(() => Pages);
                 OnPropertyChanged(() => CurrentComicBookName);
+                OnPropertyChanged(() => PreviousChapters);
+                OnPropertyChanged(() => NextChapters);
             }
         }
 
@@ -146,6 +148,31 @@ namespace Blacker.MangaReader.ViewModels
                     return String.Empty;
 
                 return String.Format("{0}/{1}", page.Name ?? (CurrentSheetIndex*2 + 1).ToString(CultureInfo.InvariantCulture), PageCount);
+            }
+        }
+
+        public IEnumerable<string> PreviousChapters
+        {
+            get
+            {
+                if (CurrentComicBook == null)
+                    return Enumerable.Empty<string>();
+
+                return _comicBookManager.ListFiles(CurrentComicBook)
+                                        .TakeWhile(f => !f.Equals(CurrentComicBook.FileName, StringComparison.OrdinalIgnoreCase)).Reverse();
+            }
+        }
+
+        public IEnumerable<string> NextChapters
+        {
+            get
+            {
+                if (CurrentComicBook == null)
+                    return Enumerable.Empty<string>();
+
+                return _comicBookManager.ListFiles(CurrentComicBook)
+                                        .SkipWhile(f => !f.Equals(CurrentComicBook.FileName, StringComparison.OrdinalIgnoreCase))
+                                        .Skip(1);
             }
         }
 
@@ -211,18 +238,32 @@ namespace Blacker.MangaReader.ViewModels
 
         private void OpenChapter(object param)
         {
-            _interactionService.ShowOpenFileDialog(SupportedFormatHelper.DefaultExtension, SupportedFormatHelper.OpenFileDialogFilter,
-                                                   (result, path) =>
-                                                       {
-                                                           if (result == DialogResult.OK)
+            var filePath = param as string;
+
+            if (String.IsNullOrEmpty(filePath))
+            {
+
+                _interactionService.ShowOpenFileDialog(SupportedFormatHelper.DefaultExtension, SupportedFormatHelper.OpenFileDialogFilter,
+                                                       (result, path) =>
                                                            {
-                                                               var chapter = _comicBookManager.Open(path);
-                                                               if (chapter != null)
+                                                               if (result == DialogResult.OK)
                                                                {
-                                                                   CurrentComicBook = chapter;
+                                                                   var chapter = _comicBookManager.Open(path);
+                                                                   if (chapter != null)
+                                                                   {
+                                                                       CurrentComicBook = chapter;
+                                                                   }
                                                                }
-                                                           }
-                                                       });
+                                                           });
+            }
+            else
+            {
+                var chapter = _comicBookManager.Open(filePath);
+                if (chapter != null)
+                {
+                    CurrentComicBook = chapter;
+                }
+            }
         }
 
         private void OnTurnPageRequested(TurnPageRequestType requestType)

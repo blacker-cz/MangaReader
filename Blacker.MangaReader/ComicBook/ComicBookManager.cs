@@ -5,11 +5,14 @@ using System.Linq;
 using Blacker.MangaReader.ComicBook.Exceptions;
 using Blacker.MangaReader.ComicBook.Helpers;
 using Blacker.MangaReader.Collections;
+using Blacker.MangaReader.Utils;
 
 namespace Blacker.MangaReader.ComicBook
 {
     class ComicBookManager
     {
+        private readonly Cache<string,IEnumerable<string>> _filesCache = new Cache<string, IEnumerable<string>>(TimeSpan.FromMinutes(1));
+
         public ComicBook Open(string file)
         {
             if (String.IsNullOrEmpty(file))
@@ -68,7 +71,16 @@ namespace Blacker.MangaReader.ComicBook
             if (!Directory.Exists(path))
                 return Enumerable.Empty<string>();
 
-            return Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Where(SupportedFormatHelper.IsSupported).OrderByAlphaNumeric();
+            var files = _filesCache[path];
+
+            if (files != null)
+                return files;
+
+            files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Where(SupportedFormatHelper.IsSupported).OrderByAlphaNumeric().ToArray();
+
+            _filesCache[path] = files;
+
+            return files;
         }
     }
 }

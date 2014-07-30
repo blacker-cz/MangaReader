@@ -10,6 +10,7 @@
         xmlns:eity="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:eins="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:converters="clr-namespace:Blacker.MangaReader.Converters"
+        xmlns:comicBook="clr-namespace:Blacker.MangaReader.ComicBook"
         mc:Ignorable="d"
         Icon="..\reader.ico"
         Title="Manga Reader"
@@ -20,6 +21,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:ComicBookPageTypeToAlignmentConverter x:Key="ComicBookPageTypeToAlignmentConverter" />
+            <converters:PathToChapterNameConverter x:Key="PathToChapterNameConverter" />
         </ResourceDictionary>
     </Window.Resources>
     
@@ -44,7 +46,7 @@
     </i:Interaction.Behaviors>
 
     <eity:Interaction.Triggers>
-        <eity:EventTrigger EventName="MouseLeave">
+        <eity:EventTrigger EventName="MouseLeave" PreviewInvoke="TriggerBase_OnPreviewInvoke">
             <eins:GoToStateAction TargetName="MainGrid" StateName="HideNavigationPanelState"/>
         </eity:EventTrigger>
     </eity:Interaction.Triggers>
@@ -89,8 +91,19 @@
                     <TextBlock Text="&#xf115;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="17" Margin="1, 2, 0, 0" />
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=PrevChapterCommand}"
-                        ToolTip="Previous Chapter">
+                        ToolTip="Previous Chapter, right click for list">
                     <TextBlock Text="&#xf100;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="-3, 2, 0, 0" />
+                    <Button.ContextMenu>
+                        <ContextMenu Name="PreviousChapterContextMenu" ItemsSource="{Binding PreviousChapters, Mode=OneWay}">
+                            <ContextMenu.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="Header" Value="{Binding Converter={StaticResource PathToChapterNameConverter}}" />
+                                    <Setter Property="Command" Value="{Binding Path=PlacementTarget.DataContext.OpenChapterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </ContextMenu.ItemContainerStyle>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="-50, 0, 0, 0" Command="{Binding Path=PrevPageCommand}"
                         ToolTip="Previous Page">
@@ -101,8 +114,19 @@
                     <TextBlock Text="&#xf105;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="1, 2, 0, 0" />
                 </Button>
                 <Button Grid.Column="1" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}" Margin="150, 0, 0, 0" HorizontalAlignment="Center" Command="{Binding Path=NextChapterCommand}"
-                        ToolTip="Next Chapter">
+                        ToolTip="Next Chapter, right click for list">
                     <TextBlock Text="&#xf101;" Style="{DynamicResource FontAwesome}" FontWeight="Bold" FontSize="25" Margin="1, 2, 0, 0" />
+                    <Button.ContextMenu>
+                        <ContextMenu Name="NextChapterContextMenu" ItemsSource="{Binding NextChapters, Mode=OneWay}">
+                            <ContextMenu.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="Header" Value="{Binding Converter={StaticResource PathToChapterNameConverter}}" />
+                                    <Setter Property="Command" Value="{Binding Path=PlacementTarget.DataContext.OpenChapterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </ContextMenu.ItemContainerStyle>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
                 <Slider x:Name="ZoomSlider" Grid.Column="1" Width="50" Height="40" Margin="300,21,0,0" Minimum="1.0" Maximum="3.0" TickFrequency="0.1" />
             </Grid>
@@ -125,7 +149,7 @@
                 <book:Book Name="BookControl" ItemsSource="{Binding Path=Pages}" CurrentSheetIndex="{Binding Path=CurrentSheetIndex, Mode=TwoWay}">
                     <book:Book.ItemTemplate>
                         <DataTemplate>
-                            <Grid Background="White" Cursor="Hand">
+                            <Grid Background="White" Cursor="Hand" d:DataContext="{d:DesignInstance comicBook:ComicBookPage}">
                                 <Border BorderThickness="0.1,0,0.1,0" BorderBrush="Black" />
                                 <WrapPanel HorizontalAlignment="{Binding Path=PageType, Converter={StaticResource ComicBookPageTypeToAlignmentConverter}}" VerticalAlignment="Center">
                                     <Image Source="{Binding Path=Image}" Panel.ZIndex="-5" />
