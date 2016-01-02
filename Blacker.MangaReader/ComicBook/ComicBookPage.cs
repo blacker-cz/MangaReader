@@ -6,18 +6,15 @@ namespace Blacker.MangaReader.ComicBook
 {
     class ComicBookPage
     {
-        private readonly BitmapSource _originalImage;
-
-        private BitmapSource _image;
-
         public ComicBookPage(string name, BitmapSource image, ComicBookPageType type)
         {
             if (image == null) 
                 throw new ArgumentNullException("image");
 
             Name = name;
-            _originalImage = image;
             PageType = type;
+
+            Image = ProcessImage(image, type);
 
             PageIdentifier = Guid.NewGuid();
         }
@@ -28,25 +25,21 @@ namespace Blacker.MangaReader.ComicBook
 
         public ComicBookPageType PageType { get; private set; }
 
-        public BitmapSource Image
-        {
-            get { return _image ?? (_image = GetProcessedImage()); }
-        }
+        public BitmapSource Image { get; private set; }
 
-        private BitmapSource GetProcessedImage()
+        private static BitmapSource ProcessImage(BitmapSource image, ComicBookPageType pageType)
         {
-            switch (PageType)
+            switch (pageType)
             {
                 case ComicBookPageType.Filler:
                 case ComicBookPageType.WholePage:
-                    return _originalImage;
+                    return image;
 
                 case ComicBookPageType.LeftHalf:
-                    return new CroppedBitmap(_originalImage, new Int32Rect(0, 0, _originalImage.PixelWidth/2, _originalImage.PixelHeight));
+                    return new CroppedBitmap(image, new Int32Rect(0, 0, image.PixelWidth/2, image.PixelHeight));
 
                 case ComicBookPageType.RightHalf:
-                    return new CroppedBitmap(_originalImage,
-                                             new Int32Rect(_originalImage.PixelWidth/2, 0, _originalImage.PixelWidth - _originalImage.PixelWidth/2, _originalImage.PixelHeight));
+                    return new CroppedBitmap(image, new Int32Rect(image.PixelWidth/2, 0, image.PixelWidth - image.PixelWidth/2, image.PixelHeight));
 
                 default:
                     throw new ArgumentOutOfRangeException();

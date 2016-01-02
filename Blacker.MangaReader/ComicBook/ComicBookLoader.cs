@@ -102,6 +102,7 @@ namespace Blacker.MangaReader.ComicBook
                     image.StreamSource = stream;
                     image.CacheOption = BitmapCacheOption.OnLoad;
                     image.EndInit();
+                    image.Freeze();
 
                     if (image.PixelWidth >= image.PixelHeight)
                     {
