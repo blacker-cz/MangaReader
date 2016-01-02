@@ -76,7 +76,11 @@ namespace Blacker.MangaReader.ComicBook
             if (files != null)
                 return files;
 
-            files = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly).Where(SupportedFormatHelper.IsSupported).OrderByAlphaNumeric().ToArray();
+            files =
+                Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly)
+                    .Where(SupportedFormatHelper.IsSupported)
+                    .OrderByAlphaNumeric(ComicPathFilterHelper.FilterPath)
+                    .ToArray();
 
             _filesCache[path] = files;
 

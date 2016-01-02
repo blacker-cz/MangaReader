@@ -120,6 +120,7 @@
     <Compile Include="ComicBook\ComicBookManager.cs" />
     <Compile Include="ComicBook\ComicBookPageType.cs" />
     <Compile Include="ComicBook\Exceptions\ComicBookFormatNotSupportedException.cs" />
+    <Compile Include="ComicBook\Helpers\ComicPathFilterHelper.cs" />
     <Compile Include="ComicBook\Helpers\SupportedFormatHelper.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="ComicBook\ComicBookPage.cs" />

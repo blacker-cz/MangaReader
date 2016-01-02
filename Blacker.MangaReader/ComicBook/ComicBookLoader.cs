@@ -56,7 +56,7 @@ namespace Blacker.MangaReader.ComicBook
                     using (var archive = ArchiveFactory.Open(stream))
                     {
                         var entries = archive.Entries.Where(entry => !entry.IsDirectory)
-                                             .OrderByAlphaNumeric(entry => entry.FilePath)
+                                             .OrderByAlphaNumeric(entry => entry.FilePath, ComicPathFilterHelper.FilterPath)
                                              .Where(entry => !entry.IsDirectory && IsImage(entry.FilePath))
                                              .ToList();
 
